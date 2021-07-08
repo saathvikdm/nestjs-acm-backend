@@ -4,20 +4,20 @@ import { User } from './user.entity';
 
 @EntityRepository(User)
 export class UsersRepository extends Repository<User> {
-  async signIn(googleAuthData: GoogleAuthData, done): Promise<User> {
+  async signIn(googleAuthData: GoogleAuthData): Promise<User> {
     const { googleId } = googleAuthData;
-
+    console.log('From signIn function');
     const user = await this.findOne({ googleId: googleId });
-    if (user) {
-      done(null, user);
-      return user;
+
+    if (!user) {
+      this.createUser(googleAuthData);
     }
-    return this.createUser(googleAuthData, done);
+
+    return user;
   }
 
-  async createUser(googleAuthData: GoogleAuthData, done): Promise<User> {
-    const { googleId, firstName, lastName, picture, accessToken } =
-      googleAuthData;
+  async createUser(googleAuthData: GoogleAuthData): Promise<User> {
+    const { googleId, firstName, lastName, picture } = googleAuthData;
     const user = this.create({
       googleId,
       firstName,
@@ -27,7 +27,6 @@ export class UsersRepository extends Repository<User> {
 
     try {
       await this.save(user);
-      done(null, user);
       return user;
     } catch (error) {
       console.log(error.code);

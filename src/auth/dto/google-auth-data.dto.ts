@@ -10,6 +10,4 @@ export class GoogleAuthData {
 
   @IsOptional()
   picture: string;
-
-  accessToken: string;
 }

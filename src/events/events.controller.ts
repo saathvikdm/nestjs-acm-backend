@@ -27,6 +27,7 @@ export class EventsController {
     return this.eventsService.getEventById(id);
   }
 
+  @UseGuards(AuthGuard())
   @Post()
   createEvent(@Body() createEventDto: CreateEventDto): Promise<Event> {
     return this.eventsService.createEvent(createEventDto);

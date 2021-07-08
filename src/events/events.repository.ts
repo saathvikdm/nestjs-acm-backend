@@ -16,7 +16,7 @@ export class EventsRepository extends Repository<Event> {
 
     if (search) {
       query.andWhere(
-        'LOWER(event.title) LIKE LOWER(:search) or LOWER(event.description) LIKE LOWER(:search) ',
+        '(LOWER(event.title) LIKE LOWER(:search) or LOWER(event.description) LIKE LOWER(:search))',
         { search: `%${search}%` },
       );
     }

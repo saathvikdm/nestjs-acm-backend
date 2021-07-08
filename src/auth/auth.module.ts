@@ -4,19 +4,29 @@ import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersRepository } from './users.repository';
 import { GoogleStrategy } from './google.strategy';
-import { SessionSerializer } from './utils/Serializer';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UsersRepository])],
-  providers: [
-    GoogleStrategy,
-    SessionSerializer,
-    {
-      provide: 'AUTH_SERVICE',
-      useClass: AuthService,
-    },
+  imports: [
+    ConfigModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get('JWT_SECRET'),
+        signOptions: {
+          expiresIn: '10h',
+        },
+      }),
+    }),
+    TypeOrmModule.forFeature([UsersRepository]),
   ],
+  providers: [GoogleStrategy, AuthService, JwtStrategy],
   controllers: [AuthController],
-  exports: [GoogleStrategy],
+  exports: [GoogleStrategy, JwtStrategy, PassportModule],
 })
 export class AuthModule {}

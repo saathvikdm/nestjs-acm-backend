@@ -7,7 +7,9 @@ import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      envFilePath: [`.env`],
+    }),
     EventsModule,
     AuthModule,
     PassportModule.register({ session: true }),
