@@ -32,11 +32,13 @@ export class EventsController {
     return this.eventsService.createEvent(createEventDto);
   }
 
+  @UseGuards(AuthGuard())
   @Delete(':id')
   deleteEventById(@Param('id') id: string): Promise<void> {
     return this.eventsService.deleteEventById(id);
   }
 
+  @UseGuards(AuthGuard())
   @Patch('/:id/status')
   updateEventStatus(
     @Param('id') id: string,
@@ -47,7 +49,6 @@ export class EventsController {
   }
 
   @Get()
-  @UseGuards(AuthenticatedGuard)
   getEvents(@Query() filterDto: GetEventFiltersDto): Promise<Event[]> {
     return this.eventsService.getEvents(filterDto);
   }

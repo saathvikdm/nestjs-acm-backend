@@ -1,4 +1,4 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from './user.entity';
@@ -9,15 +9,12 @@ export class AuthController {
 
   @Get('/google')
   @UseGuards(AuthGuard('google'))
-  async googleAuth(@Req() req): Promise<void> {
-    console.log('From controller request');
-    console.log(req.user);
-  }
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  async googleAuth(@Req() req: Request): Promise<void> {}
 
   @Get('/google/redirect')
   @UseGuards(AuthGuard('google'))
   googleAuthRedirect(@Req() req): Promise<{ user: User; accessToken: string }> {
-    console.log('From controller request redirect');
     return req.user;
   }
 }

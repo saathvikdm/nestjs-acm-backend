@@ -17,17 +17,15 @@ export class AuthService implements AuthenticationProvider {
     googleAuthData: GoogleAuthData,
   ): Promise<{ user: User; accessToken: string }> {
     const { googleId } = googleAuthData;
-    console.log('From signIn function');
-    const user = await this.usersRepository.findOne({ googleId: googleId });
-    console.log('user object from signIn');
-    console.log(user);
 
-    const accessToken: string = await this.jwtService.sign({ id: user.id });
-    console.log(accessToken);
+    let user = await this.usersRepository.findOne({ googleId: googleId });
 
     if (!user) {
-      await this.usersRepository.createUser(googleAuthData);
+      user = await this.usersRepository.createUser(googleAuthData);
     }
+
+    const accessToken: string = await this.jwtService.sign({ id: user.id });
+    // console.log(accessToken);
 
     return { user, accessToken };
   }

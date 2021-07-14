@@ -6,7 +6,7 @@ import { User } from './user.entity';
 export class UsersRepository extends Repository<User> {
   async signIn(googleAuthData: GoogleAuthData): Promise<User> {
     const { googleId } = googleAuthData;
-    console.log('From signIn function');
+    // console.log('From signIn function');
     const user = await this.findOne({ googleId: googleId });
 
     if (!user) {

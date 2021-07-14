@@ -15,8 +15,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     });
   }
   async validate(token, refreshToken, profile): Promise<any> {
-    console.log('from strategy');
-    console.log(profile);
+    // console.log('from strategy');
+    // console.log(profile);
     const { name, photos, id } = profile;
     const user: GoogleAuthData = {
       googleId: id,
@@ -24,6 +24,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       lastName: name.familyName,
       picture: photos[0].value,
     };
+    // console.log('user: ' + user.firstName);
     return this.authService.googleLogin(user);
   }
 }
