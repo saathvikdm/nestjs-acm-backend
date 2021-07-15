@@ -15,7 +15,7 @@ export class AuthService implements AuthenticationProvider {
 
   async googleLogin(
     googleAuthData: GoogleAuthData,
-  ): Promise<{ user: User; accessToken: string }> {
+  ): Promise<{ accessToken: string }> {
     const { googleId } = googleAuthData;
 
     let user = await this.usersRepository.findOne({ googleId: googleId });
@@ -27,7 +27,7 @@ export class AuthService implements AuthenticationProvider {
     const accessToken: string = await this.jwtService.sign({ id: user.id });
     // console.log(accessToken);
 
-    return { user, accessToken };
+    return { accessToken };
   }
 
   async findUser(id: string): Promise<User | undefined> {

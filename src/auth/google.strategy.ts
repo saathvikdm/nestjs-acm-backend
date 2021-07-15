@@ -14,17 +14,20 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       scope: ['email', 'profile'],
     });
   }
-  async validate(token, refreshToken, profile): Promise<any> {
-    // console.log('from strategy');
-    // console.log(profile);
+  async validate(token, refreshToken, profile, cb): Promise<any> {
     const { name, photos, id } = profile;
-    const user: GoogleAuthData = {
+    const userData: GoogleAuthData = {
       googleId: id,
       firstName: name.givenName,
       lastName: name.familyName,
       picture: photos[0].value,
     };
-    // console.log('user: ' + user.firstName);
-    return this.authService.googleLogin(user);
+    try {
+      const jwt = await this.authService.googleLogin(userData);
+      cb(null, jwt);
+    } catch (err) {
+      console.log('ERROR', err);
+      cb(err, null);
+    }
   }
 }

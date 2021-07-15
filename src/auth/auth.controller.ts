@@ -17,4 +17,10 @@ export class AuthController {
   googleAuthRedirect(@Req() req): Promise<{ user: User; accessToken: string }> {
     return req.user;
   }
+
+  @UseGuards(AuthGuard())
+  @Get('/google/test')
+  getUserById(@Req() req) {
+    console.log(`${req.user.id}`);
+  }
 }
