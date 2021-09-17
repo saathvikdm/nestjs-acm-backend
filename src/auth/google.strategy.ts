@@ -23,8 +23,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       picture: photos[0].value,
     };
     try {
-      const jwt = await this.authService.googleLogin(userData);
-      cb(null, jwt);
+      const data = await this.authService.googleLogin(userData);
+      cb(null, data);
     } catch (err) {
       console.log('ERROR', err);
       cb(err, null);

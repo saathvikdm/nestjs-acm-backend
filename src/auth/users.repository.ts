@@ -1,5 +1,6 @@
 import { EntityRepository, Repository } from 'typeorm';
 import { GoogleAuthData } from './dto/google-auth-data.dto';
+import { UserDataDto } from './dto/user-data.dto';
 import { User } from './user.entity';
 
 @EntityRepository(User)
@@ -16,7 +17,7 @@ export class UsersRepository extends Repository<User> {
     return user;
   }
 
-  async createUser(googleAuthData: GoogleAuthData): Promise<User> {
+  async createUser(googleAuthData: GoogleAuthData): Promise<UserDataDto> {
     const { googleId, firstName, lastName, picture } = googleAuthData;
     const user = this.create({
       googleId,
@@ -27,7 +28,8 @@ export class UsersRepository extends Repository<User> {
 
     try {
       await this.save(user);
-      return user;
+      const { id, firstName, lastName, picture } = user;
+      return { id, firstName, lastName, picture };
     } catch (error) {
       console.log(error.code);
     }

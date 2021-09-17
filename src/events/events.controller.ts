@@ -15,41 +15,49 @@ import { GetEventFiltersDto } from './dto/get-event-filter.dto';
 import { UpdateEventStatusDto } from './dto/update-event-status.dto';
 import { Event } from './event.entity';
 import { AuthGuard } from '@nestjs/passport';
-import { AuthenticatedGuard } from 'src/auth/guards';
+import { GetUser } from 'src/auth/get-user.decorator';
+import { User } from 'src/auth/user.entity';
 
 @Controller('events')
 export class EventsController {
   constructor(private eventsService: EventsService) {}
 
+  @Get()
+  getEvents(@Query() filterDto: GetEventFiltersDto): Promise<Event[]> {
+    return this.eventsService.getEvents(filterDto);
+  }
+
   @Get(':id')
-  getEventById(@Param('id') id: string): Promise<Event> {
-    return this.eventsService.getEventById(id);
+  getEventById(@Param('id') id: string, @GetUser() user: User): Promise<Event> {
+    return this.eventsService.getEventById(id, user);
   }
 
   @UseGuards(AuthGuard())
   @Post()
-  createEvent(@Body() createEventDto: CreateEventDto): Promise<Event> {
-    return this.eventsService.createEvent(createEventDto);
+  createEvent(
+    @Body() createEventDto: CreateEventDto,
+    @GetUser() user: User,
+  ): Promise<Event> {
+    return this.eventsService.createEvent(createEventDto, user);
   }
 
   @UseGuards(AuthGuard())
   @Delete(':id')
-  deleteEventById(@Param('id') id: string): Promise<void> {
-    return this.eventsService.deleteEventById(id);
+  deleteEventById(
+    @Param('id') id: string,
+    @GetUser() user: User,
+  ): Promise<void> {
+    return this.eventsService.deleteEventById(id, user);
   }
 
   @UseGuards(AuthGuard())
   @Patch('/:id/status')
   updateEventStatus(
     @Param('id') id: string,
+    @GetUser() user: User,
     @Body() updateEventStatusDto: UpdateEventStatusDto,
   ): Promise<Event> {
     const { status } = updateEventStatusDto;
-    return this.eventsService.updateEventStatus(id, status);
-  }
-
-  @Get()
-  getEvents(@Query() filterDto: GetEventFiltersDto): Promise<Event[]> {
-    return this.eventsService.getEvents(filterDto);
+    return this.eventsService.updateEventStatus(id, status, user);
   }
 }

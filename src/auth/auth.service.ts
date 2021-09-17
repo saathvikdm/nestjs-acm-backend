@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthenticationProvider } from './auth';
 import { GoogleAuthData } from './dto/google-auth-data.dto';
 import { User } from './user.entity';
 import { UsersRepository } from './users.repository';
 import { JwtService } from '@nestjs/jwt';
+import { UserDataDto } from './dto/user-data.dto';
 @Injectable()
 export class AuthService implements AuthenticationProvider {
   constructor(
@@ -15,10 +16,10 @@ export class AuthService implements AuthenticationProvider {
 
   async googleLogin(
     googleAuthData: GoogleAuthData,
-  ): Promise<{ accessToken: string }> {
+  ): Promise<{ user: UserDataDto; accessToken: string }> {
     const { googleId } = googleAuthData;
 
-    let user = await this.usersRepository.findOne({ googleId: googleId });
+    let user = await this.findUser(googleId);
 
     if (!user) {
       user = await this.usersRepository.createUser(googleAuthData);
@@ -27,10 +28,16 @@ export class AuthService implements AuthenticationProvider {
     const accessToken: string = await this.jwtService.sign({ id: user.id });
     // console.log(accessToken);
 
-    return { accessToken };
+    return { user, accessToken };
   }
 
-  async findUser(id: string): Promise<User | undefined> {
-    return await this.usersRepository.findOne({ googleId: id });
+  async findUser(googleId: string): Promise<any | undefined> {
+    try {
+      const { id, firstName, lastName, picture } =
+        await this.usersRepository.findOne({ googleId: googleId });
+      return { id, firstName, lastName, picture };
+    } catch (err) {
+      return null;
+    }
   }
 }

@@ -21,6 +21,6 @@ export class AuthController {
   @UseGuards(AuthGuard())
   @Get('/google/test')
   getUserById(@Req() req) {
-    console.log(`${req.user.id}`);
+    console.log(req.user);
   }
 }

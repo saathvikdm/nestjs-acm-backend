@@ -1,3 +1,4 @@
+import { User } from 'src/auth/user.entity';
 import { EntityRepository, Repository } from 'typeorm';
 import { CreateEventDto } from './dto/create-event.dto';
 import { GetEventFiltersDto } from './dto/get-event-filter.dto';
@@ -25,13 +26,17 @@ export class EventsRepository extends Repository<Event> {
     return events;
   }
 
-  async createEvent(createEventDto: CreateEventDto): Promise<Event> {
+  async createEvent(
+    createEventDto: CreateEventDto,
+    user: User,
+  ): Promise<Event> {
     const { title, description } = createEventDto;
 
     const event = this.create({
       title,
       description,
       status: EventStatus.OPEN,
+      user,
     });
 
     return await this.save(event);
